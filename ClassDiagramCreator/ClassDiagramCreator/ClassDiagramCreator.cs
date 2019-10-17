@@ -39,18 +39,59 @@ namespace ClassDiagramMaker
         /// <param name="arrowsToInclude">Use as a flag if you want more than one (for all arrows, pass ArrowsToInclude.Inheritance |ArrowsToInclude.SuggestedRelationArrows) </param>
         public static void MakeClassDiagram(ArrowsToInclude arrowsToInclude = ArrowsToInclude.None, int NumberOfClassesPerRow = 10)
         {
-            var allClassesAndStructs = AppDomain.CurrentDomain
-           .GetAssemblies()
-           .SelectMany(x => x.GetTypes())
-           .Where(x => x.IsClass || x.IsValueType)
-           .Where(m => m.GetCustomAttributes(typeof(ClassDiagramAttribute), false).Length > 0)
-           .ToArray();
+            //int asdasd = 2;
+            //var allClassesAndStructs = AppDomain.CurrentDomain
+            //        .GetAssemblies()
+            //        .SelectMany(x => x.GetTypes())
+            //        .Where(x => x.IsClass || x.IsValueType)
+            //        .Where(m => m.GetCustomAttributes(typeof(ClassDiagramAttribute), false).Length > 0)
+            //        .ToArray();
 
-            if (allClassesAndStructs.Length == 0)
+            //var AllEnumTypes = AppDomain.CurrentDomain.GetAssemblies()
+            //        .SelectMany(x => x.GetTypes())
+            //        .Where(x => x.IsEnum)
+            //        .Where(e => e.GetCustomAttributes(typeof(ClassDiagramEnumAttribute), false).Length > 0)
+            //        .ToArray();
+
+            //var AllInterfaces = AppDomain.CurrentDomain.GetAssemblies()
+            //        .SelectMany(x => x.GetTypes())
+            //        .Where(x => x.IsInterface)
+            //        .Where(e => e.GetCustomAttributes(typeof(ClassDiagramInterfaceAttribute), false).Length > 0)
+            //        .ToArray();
+
+            //if (allClassesAndStructs.Length == 0 && AllEnumTypes.Length == 0 && AllInterfaces.Length == 0)
+            //{
+            //    return;
+            //}
+
+
+
+            List<Type> allClassesAndStructs = new List<Type>();
+            List<Type> allEnumTypes = new List<Type>();
+            List<Type> allInterfaces = new List<Type>();
+
+            List<Type> AllTypes = AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.GetTypes()).ToList();
+            for (int i = 0; i < AllTypes.Count; i++)
+            {
+                if (AllTypes[i].GetCustomAttribute(typeof(ClassDiagramAttribute), false) != null)
+                {
+                    allClassesAndStructs.Add(AllTypes[i]);
+                }
+                else if (AllTypes[i].GetCustomAttribute(typeof(ClassDiagramEnumAttribute), false) != null)
+                {
+                    allEnumTypes.Add(AllTypes[i]);
+                }
+                else if (AllTypes[i].GetCustomAttribute(typeof(ClassDiagramInterfaceAttribute), false) != null)
+                {
+                    allInterfaces.Add(AllTypes[i]);
+
+                }
+            }
+
+            if (allClassesAndStructs.Count == 0 && allEnumTypes.Count == 0 && allInterfaces.Count == 0)
             {
                 return;
             }
-            
 
             visApp = new Application();
 
@@ -87,7 +128,7 @@ namespace ClassDiagramMaker
             float biggestHeight = 0;
             float currentDepth = 12;
             float xPos = 0;
-            for (int i = 0; i < allClassesAndStructs.Length; i++)
+            for (int i = 0; i < allClassesAndStructs.Count; i++)
             {
                 if (i % NumberOfClassesPerRow == 0)
                 {
@@ -369,17 +410,13 @@ namespace ClassDiagramMaker
 
             #region Enums
 
-            var AllEnumTypes = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(x => x.GetTypes())
-                .Where(x => x.IsEnum)
-                .Where(e => e.GetCustomAttributes(typeof(ClassDiagramEnumAttribute), false).Length > 0)
-                .ToArray();
+
 
             Master visioEnumMaster = umlStencils.Masters.get_ItemU(@"Enumeration");
 
-            for (int i = 0; i < AllEnumTypes.Length; i++)
+            for (int i = 0; i < allEnumTypes.Count; i++)
             {
-                Type curType = AllEnumTypes[i];
+                Type curType = allEnumTypes[i];
 
                 Shape visioEnumShape = visioPage.Drop(visioEnumMaster, (i * 3) + 5, 14);
                 visioEnumShape.Text = curType.Name;
@@ -424,17 +461,13 @@ namespace ClassDiagramMaker
 
             #region Interfaces
 
-            var AllInterfaces = AppDomain.CurrentDomain.GetAssemblies()
-               .SelectMany(x => x.GetTypes())
-               .Where(x => x.IsInterface)
-               .Where(e => e.GetCustomAttributes(typeof(ClassDiagramInterfaceAttribute), false).Length > 0)
-               .ToArray();
+
 
             Master visioInterfaceMaster = umlStencils.Masters.get_ItemU(@"Interface");
 
-            for (int i = 0; i < AllInterfaces.Length; i++)
+            for (int i = 0; i < allInterfaces.Count; i++)
             {
-                Type curType = AllInterfaces[i];
+                Type curType = allInterfaces[i];
 
                 Shape visioInterfaceShape = visioPage.Drop(visioInterfaceMaster, 5 + i * 3, 8);
 
@@ -613,7 +646,7 @@ namespace ClassDiagramMaker
             //Important
             if ((arrowsToInclude & ArrowsToInclude.Inheritance) != ArrowsToInclude.None)
             {
-                var AllInterfaceInheritance = GetInterfaceInheritances(allClassesAndStructs, AllInterfaces);
+                var AllInterfaceInheritance = GetInterfaceInheritances(allClassesAndStructs, allInterfaces);
                 RecursiveConnectAllInheritance(AllInterfaceInheritance);
                 RecursiveConnectAllInheritance(listOfAllInheritanceClasses);
             }
@@ -831,7 +864,7 @@ namespace ClassDiagramMaker
                     neededXAndY.x = position.x - childPos.x + xOffSetFromCenterOfParent + (multiplier * i * childSize.x);
                     neededXAndY.y = position.y + size.y + 1 - childPos.y;
 
-                    MoveShapeAndChildren(childShape, visioPage, neededXAndY.x, neededXAndY.y*-1);
+                    MoveShapeAndChildren(childShape, visioPage, neededXAndY.x, neededXAndY.y * -1);
 
 
                     MyVector2 newchildPos;
@@ -888,7 +921,7 @@ namespace ClassDiagramMaker
 
         }
 
-        public static List<TypeContainer> GetInheritances(Type[] allClassesAndStructs)
+        public static List<TypeContainer> GetInheritances(List<Type> allClassesAndStructs)
         {
             List<TypeContainer> listToReturn = new List<TypeContainer>();
 
@@ -909,7 +942,7 @@ namespace ClassDiagramMaker
             return listToReturn;
         }
 
-        public static List<TypeContainer> GetInterfaceInheritances(Type[] allClassesAndStructs, Type[] allInterfaces)
+        public static List<TypeContainer> GetInterfaceInheritances(List<Type> allClassesAndStructs, List<Type> allInterfaces)
         {
             List<TypeContainer> listToReturn = new List<TypeContainer>();
 
@@ -930,7 +963,7 @@ namespace ClassDiagramMaker
             return listToReturn;
         }
 
-        public static List<TypeContainer> RecursiveGetChildClasses(Type[] allClassesAndStructs, TypeContainer typeToCheck)
+        public static List<TypeContainer> RecursiveGetChildClasses(List<Type> allClassesAndStructs, TypeContainer typeToCheck)
         {
             List<TypeContainer> returningTCList = new List<TypeContainer>();
             var typesThatInherit = allClassesAndStructs.Where(t => typeToCheck.ThisType.IsAssignableFrom(t) && t != typeToCheck.ThisType);
@@ -983,7 +1016,7 @@ namespace ClassDiagramMaker
                     sb.Append(fieldType.Name.Remove(fieldType.Name.Length - 2, 2));
                 }
                 sb.Append("<");
-               
+
                 foreach (var genericParam in fieldType.GetGenericArguments())
                 {
                     sb.Append(NicyfyFieldType(genericParam));
@@ -1005,9 +1038,9 @@ namespace ClassDiagramMaker
             }
             else if (fieldType.IsByRef && fieldType.Name.Contains("[]"))
             {
-                string type = NicyfyStringType(fieldType.Name.Substring(0,fieldType.Name.IndexOf("[]")));
+                string type = NicyfyStringType(fieldType.Name.Substring(0, fieldType.Name.IndexOf("[]")));
                 return type + "[]";
-               
+
             }
             else if (fieldType.BaseType != null && (fieldType.BaseType != typeof(MulticastDelegate)))
             {

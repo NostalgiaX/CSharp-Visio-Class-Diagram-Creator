@@ -36,7 +36,9 @@ namespace TestProject
 
         }
 
-        public void TestRefList(ref int[] dafq) { }
+        public void TestRefArr(ref int[] refIntArray) { }
+        public void TestRefList(ref List<int> refIntList) { }
+
     }
 
     [ClassDiagram]
