@@ -710,7 +710,7 @@ namespace ClassDiagramMaker
                         }
 
                         //Arrays
-                        if (field.FieldType.BaseType != null && field.FieldType.BaseType.Name == "Array")
+                        if ((field.FieldType.BaseType != null && field.FieldType.BaseType.Name == "Array") || (field.FieldType.IsByRef && field.FieldType.Name.Contains("[]")))
                         {
                             Type arrayType = field.FieldType.GetElementType();
                             if (arrayType == typeFrom)
@@ -744,16 +744,19 @@ namespace ClassDiagramMaker
                     foreach (var method in allMethodsInType)
                     {
                         var parameters = method.GetParameters();
+
                         foreach (var parameter in parameters)
                         {
+                            Type paramType = parameter.ParameterType;
+
                             //Lists
-                            foreach (Type interfaceType in parameter.GetType().GetInterfaces())
+                            foreach (Type interfaceType in paramType.GetInterfaces())
                             {
                                 if (interfaceType.IsGenericType &&
                                     interfaceType.GetGenericTypeDefinition()
                                     == typeof(IList<>))
                                 {
-                                    foreach (var genericArg in parameter.GetType().GetGenericArguments())
+                                    foreach (var genericArg in paramType.GetGenericArguments())
                                     {
                                         if (genericArg == typeFrom)
                                         {
@@ -774,10 +777,11 @@ namespace ClassDiagramMaker
                                 }
                             }
 
+
                             //Arrays
-                            if (parameter.GetType().BaseType != null && parameter.GetType().BaseType.Name == "Array")
+                            if ((paramType.BaseType != null && paramType.BaseType.Name == "Array") || (paramType.IsByRef && paramType.Name.Contains("[]")))
                             {
-                                Type arrayType = parameter.GetType().GetElementType();
+                                Type arrayType = paramType.IsByRef ? paramType.GetElementType().GetElementType() : paramType.GetElementType();
                                 if (arrayType == typeFrom)
                                 {
                                     if (!typesToConnectTo.Contains(typeTo))
