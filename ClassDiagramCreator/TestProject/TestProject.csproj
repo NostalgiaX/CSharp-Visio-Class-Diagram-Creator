@@ -43,8 +43,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AbstractTest.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SingleTonTest.cs" />
+    <Compile Include="SomeStaticClass.cs" />
+    <Compile Include="TestInheritance.cs" />
+    <Compile Include="TestInterface.cs" />
+    <Compile Include="TestOne.cs" />
+    <Compile Include="TestStruct.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
