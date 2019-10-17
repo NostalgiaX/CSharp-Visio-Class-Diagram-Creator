@@ -36,4 +36,5 @@ There are a few things that I would like to add one day, if I get the chance.
 - Generic classes.
 - Better layout for arrows.
 - Faster creation (don't know if this is possible, due to the nature of calling commands in Visio).
+- Support for more frameworks (potentially rewriting it to be .NET standard, so it works for .NET core also)
 
