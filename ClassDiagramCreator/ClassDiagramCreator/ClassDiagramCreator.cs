@@ -73,15 +73,16 @@ namespace ClassDiagramMaker
             List<Type> AllTypes = AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.GetTypes()).ToList();
             for (int i = 0; i < AllTypes.Count; i++)
             {
-                if (AllTypes[i].GetCustomAttribute(typeof(ClassDiagramAttribute), false) != null)
+                
+                if (AllTypes[i].GetCustomAttributes(typeof(ClassDiagramAttribute), false).Length > 0)
                 {
                     allClassesAndStructs.Add(AllTypes[i]);
                 }
-                else if (AllTypes[i].GetCustomAttribute(typeof(ClassDiagramEnumAttribute), false) != null)
+                else if (AllTypes[i].GetCustomAttributes(typeof(ClassDiagramEnumAttribute), false).Length > 0)
                 {
                     allEnumTypes.Add(AllTypes[i]);
                 }
-                else if (AllTypes[i].GetCustomAttribute(typeof(ClassDiagramInterfaceAttribute), false) != null)
+                else if (AllTypes[i].GetCustomAttributes(typeof(ClassDiagramInterfaceAttribute), false).Length > 0)
                 {
                     allInterfaces.Add(AllTypes[i]);
 
@@ -1064,7 +1065,8 @@ namespace ClassDiagramMaker
                 {
                     sb.Append(fieldType.Name.Remove(fieldType.Name.Length - 2, 2));
                     sb.Append("<");
-                    foreach (var genericParam in fieldType.GenericTypeArguments)
+                    
+                    foreach (var genericParam in fieldType.GetGenericArguments())
                     {
                         sb.Append(NicyfyFieldType(genericParam));
                         sb.Append(", ");
