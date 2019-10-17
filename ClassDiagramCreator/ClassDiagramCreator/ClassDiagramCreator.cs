@@ -239,19 +239,19 @@ namespace ClassDiagramMaker
                             {
                                 if (!property.CanRead && p == 0) continue;
                                 if (!property.CanWrite && p == 1) continue;
-                                MethodInfo method;
+                                MethodInfo propertyMethod;
                                 string newName = "";
                                 if (p == 0)
                                 {
-                                    method = property.GetGetMethod(true);
-                                    newName = method.Name;
+                                    propertyMethod = property.GetGetMethod(true);
+                                    newName = propertyMethod.Name;
                                     newName = newName.Substring(4);
                                     newName = newName.Insert(0, "Get");
                                 }
                                 else
                                 {
-                                    method = property.GetSetMethod(true);
-                                    newName = method.Name;
+                                    propertyMethod = property.GetSetMethod(true);
+                                    newName = propertyMethod.Name;
                                     newName = newName.Substring(4);
                                     newName = newName.Insert(0, "Set");
                                 }
@@ -265,29 +265,29 @@ namespace ClassDiagramMaker
                                 {
                                     isFirst = false;
                                 }
-                                if (method.IsPublic)
+                                if (propertyMethod.IsPublic)
                                 {
-                                    shapeText.Text += "+ " + newName + "(" + HandleParameterInfo(method.GetParameters()) + ")" + " : " + NicyfyFieldType(method.ReturnType);
+                                    shapeText.Text += "+ " + newName + "(" + HandleParameterInfo(propertyMethod.GetParameters()) + ")" + " : " + NicyfyFieldType(propertyMethod.ReturnType);
                                 }
                                 //Internal methods - https://docs.microsoft.com/en-us/dotnet/api/system.reflection.fieldinfo.isfamily?view=netframework-4.7.2
-                                else if (method.IsAssembly)
+                                else if (propertyMethod.IsAssembly)
                                 {
-                                    shapeText.Text += "~ " + newName + "(" + HandleParameterInfo(method.GetParameters()) + ")" + " : " + NicyfyFieldType(method.ReturnType);
+                                    shapeText.Text += "~ " + newName + "(" + HandleParameterInfo(propertyMethod.GetParameters()) + ")" + " : " + NicyfyFieldType(propertyMethod.ReturnType);
                                 }
                                 //Protected methods - https://docs.microsoft.com/en-us/dotnet/api/system.reflection.fieldinfo.isfamily?view=netframework-4.7.2
-                                else if (method.IsFamily)
+                                else if (propertyMethod.IsFamily)
                                 {
-                                    shapeText.Text += "# " + newName + "(" + HandleParameterInfo(method.GetParameters()) + ")" + " : " + NicyfyFieldType(method.ReturnType);
+                                    shapeText.Text += "# " + newName + "(" + HandleParameterInfo(propertyMethod.GetParameters()) + ")" + " : " + NicyfyFieldType(propertyMethod.ReturnType);
                                 }
-                                else if (!method.IsPublic)
+                                else if (!propertyMethod.IsPublic)
                                 {
-                                    shapeText.Text += "- " + newName + "(" + HandleParameterInfo(method.GetParameters()) + ")" + " : " + NicyfyFieldType(method.ReturnType);
+                                    shapeText.Text += "- " + newName + "(" + HandleParameterInfo(propertyMethod.GetParameters()) + ")" + " : " + NicyfyFieldType(propertyMethod.ReturnType);
                                 }
-                                if (method.IsStatic)
+                                if (propertyMethod.IsStatic)
                                 {
                                     shapeText.set_CharProps((short)VisCellIndices.visCharacterStyle, (short)VisCellVals.visUnderLine);
                                 }
-                                else if (method.IsAbstract)
+                                else if (propertyMethod.IsAbstract)
                                 {
                                     shapeText.set_CharProps((short)VisCellIndices.visCharacterStyle, (short)VisCellVals.visItalic);
                                 }
@@ -325,6 +325,7 @@ namespace ClassDiagramMaker
                             }
                         }
                         shapeText = shape.Characters;
+
                         //All methods (Apparently properties are tagged as "IsSpecialName", so discard those)
                         foreach (var method in curType.GetMethods(bindFlags).Where(m => !m.IsSpecialName))
                         {
