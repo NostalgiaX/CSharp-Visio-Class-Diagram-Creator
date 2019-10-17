@@ -663,7 +663,7 @@ namespace ClassDiagramMaker
         }
 
 
-        public static void CreateConnectionsBetweenTypes(Dictionary<Type, Shape> allTypesEnumerationsInterfacesAndShapes)
+        private static void CreateConnectionsBetweenTypes(Dictionary<Type, Shape> allTypesEnumerationsInterfacesAndShapes)
         {
             foreach (var typeFrom in allTypesEnumerationsInterfacesAndShapes.Keys)
             {
@@ -834,7 +834,7 @@ namespace ClassDiagramMaker
             }
         }
 
-        public static List<MyVector2> CorrectInheritancePosition(List<TypeContainer> allClassesWithInheritance, Dictionary<Type, Shape> allTypesEnumerationsInterfacesAndShapes)
+        private static List<MyVector2> CorrectInheritancePosition(List<TypeContainer> allClassesWithInheritance, Dictionary<Type, Shape> allTypesEnumerationsInterfacesAndShapes)
         {
             List<MyVector2> depthWidth = new List<MyVector2>();
 
@@ -874,7 +874,7 @@ namespace ClassDiagramMaker
                     MyVector2 newchildPos;
                     MyVector2 newchildSize;
                     GetShapePosAndSize(childShape, out newchildPos, out newchildSize);
-                    int asds = 2;
+                    
                 }
 
             }
@@ -903,7 +903,7 @@ namespace ClassDiagramMaker
         //    }
         //}
 
-        public static void RecursiveConnectAllInheritance(List<TypeContainer> typeContainers, TypeContainer parentType = null)
+        private static void RecursiveConnectAllInheritance(List<TypeContainer> typeContainers, TypeContainer parentType = null)
         {
             foreach (var tc in typeContainers)
             {
@@ -916,7 +916,7 @@ namespace ClassDiagramMaker
             }
         }
 
-        public static void GetShapePosAndSize(Shape shape, out MyVector2 position, out MyVector2 size)
+        private static void GetShapePosAndSize(Shape shape, out MyVector2 position, out MyVector2 size)
         {
             position.x = (float)shape.Cells["PinX"].Result[VisUnitCodes.visInches];
             position.y = (float)shape.Cells["PinY"].Result[VisUnitCodes.visInches];
@@ -925,7 +925,7 @@ namespace ClassDiagramMaker
 
         }
 
-        public static List<TypeContainer> GetInheritances(List<Type> allClassesAndStructs)
+        private static List<TypeContainer> GetInheritances(List<Type> allClassesAndStructs)
         {
             List<TypeContainer> listToReturn = new List<TypeContainer>();
 
@@ -946,7 +946,7 @@ namespace ClassDiagramMaker
             return listToReturn;
         }
 
-        public static List<TypeContainer> GetInterfaceInheritances(List<Type> allClassesAndStructs, List<Type> allInterfaces)
+        private static List<TypeContainer> GetInterfaceInheritances(List<Type> allClassesAndStructs, List<Type> allInterfaces)
         {
             List<TypeContainer> listToReturn = new List<TypeContainer>();
 
@@ -967,7 +967,7 @@ namespace ClassDiagramMaker
             return listToReturn;
         }
 
-        public static List<TypeContainer> RecursiveGetChildClasses(List<Type> allClassesAndStructs, TypeContainer typeToCheck)
+        private static List<TypeContainer> RecursiveGetChildClasses(List<Type> allClassesAndStructs, TypeContainer typeToCheck)
         {
             List<TypeContainer> returningTCList = new List<TypeContainer>();
             var typesThatInherit = allClassesAndStructs.Where(t => typeToCheck.ThisType.IsAssignableFrom(t) && t != typeToCheck.ThisType);
@@ -993,7 +993,7 @@ namespace ClassDiagramMaker
             return returningTCList;
         }
 
-        public static string CheckAndFixAutoPropName(FieldInfo FI)
+        private static string CheckAndFixAutoPropName(FieldInfo FI)
         {
             if (FI.Name.Contains("<"))
             {
@@ -1005,7 +1005,7 @@ namespace ClassDiagramMaker
             }
         }
 
-        public static string NicyfyFieldType(Type fieldType)
+        private static string NicyfyFieldType(Type fieldType)
         {
             if (fieldType.Name.Contains("List"))
             {
@@ -1078,7 +1078,7 @@ namespace ClassDiagramMaker
             }
         }
 
-        public static string NicyfyStringType(string typeAsString)
+        private static string NicyfyStringType(string typeAsString)
         {
             int lastIndexOfDot = typeAsString.LastIndexOf('.');
             string fieldTypeWithoutNameSpaces;
@@ -1117,7 +1117,7 @@ namespace ClassDiagramMaker
             return fieldTypeWithoutNameSpaces;
         }
 
-        public static string HandleParameterInfo(ParameterInfo[] paramInfos)
+        private static string HandleParameterInfo(ParameterInfo[] paramInfos)
         {
             StringBuilder sb = new StringBuilder();
             bool first = true;
@@ -1137,53 +1137,7 @@ namespace ClassDiagramMaker
             return sb.ToString();
         }
 
-        //public static void printProperties(Shapes shapes)
-        //{
-        //    // Look at each shape in the collection.
-        //    foreach (Shape shape in shapes)
-        //    {
-        //        Console.WriteLine();
-
-        //        // Use this index to look at each row in the properties
-        //        // section.
-        //        short iRow = (short)VisRowIndices.visRowFirst;
-
-        //        // While there are stil rows to look at.
-        //        while (shape.get_CellsSRCExists(
-        //            (short)VisSectionIndices.visSectionProp,
-        //            iRow,
-        //            (short)VisCellIndices.visCustPropsValue,
-        //            (short)0) != 0)
-        //        {
-        //            // Get the label and value of the current property.
-        //            string label = shape.get_CellsSRC(
-        //                    (short)VisSectionIndices.visSectionProp,
-        //                    iRow,
-        //                    (short)VisCellIndices.visCustPropsLabel
-        //                ).get_ResultStr(VisUnitCodes.visNoCast);
-
-        //            string value = shape.get_CellsSRC(
-        //                    (short)VisSectionIndices.visSectionProp,
-        //                    iRow,
-        //                    (short)VisCellIndices.visCustPropsValue
-        //                ).get_ResultStr(VisUnitCodes.visNoCast);
-
-        //            // Print the results.
-        //            Console.WriteLine(string.Format(
-        //                "Shape={0} Label={1} Value={2}",
-        //                shape.Name, label, value));
-
-        //            // Move to the next row in the properties section.
-        //            iRow++;
-        //        }
-
-        //        // Now look at child shapes in the collection.
-        //        if (shape.Master == null && shape.Shapes.Count > 0)
-        //            printProperties(shape.Shapes);
-        //    }
-        //}
-
-        public static List<Shape> GetChildShapes(Shape parentShape, Page visioPage)
+        private static List<Shape> GetChildShapes(Shape parentShape, Page visioPage)
         {
             List<Shape> shapesToReturn = new List<Shape>();
 
@@ -1198,7 +1152,7 @@ namespace ClassDiagramMaker
             return shapesToReturn;
         }
 
-        public static void MoveShapeAndChildren(Shape masterShape, Page visioPage, float unitsToMoveX, float unitsToMoveY)
+        private static void MoveShapeAndChildren(Shape masterShape, Page visioPage, float unitsToMoveX, float unitsToMoveY)
         {
             visApp.ActiveWindow.DeselectAll();
 
@@ -1227,7 +1181,7 @@ namespace ClassDiagramMaker
         /// begins</param>
         /// <param name="shapeTo">Shape at which the dynamic connector ends
         /// </param>
-        public static void ConnectWithDynamicGlueAndConnector(
+        private static void ConnectWithDynamicGlueAndConnector(
         Shape shapeFrom,
         Shape shapeTo,
         ConnectorArrows connectorType)
@@ -1381,18 +1335,21 @@ namespace ClassDiagramMaker
                 throw;
             }
         }
+
+
+        private class TypeContainer
+        {
+            public List<TypeContainer> ChildTypes = new List<TypeContainer>();
+            public Type ThisType;
+            public int Depth;
+        }
+
+        private struct MyVector2
+        {
+            public float x;
+            public float y;
+        }
     }
 
-    public class TypeContainer
-    {
-        public List<TypeContainer> ChildTypes = new List<TypeContainer>();
-        public Type ThisType;
-        public int Depth;
-    }
-
-    public struct MyVector2
-    {
-        public float x;
-        public float y;
-    }
+   
 }
